@@ -3,15 +3,20 @@ var mon = require('mongoose');
 var Schema = mon.Schema;
 var homeSchema = new Schema ({
 
-    street : String,
+    tipo : String,
+    estado : String,
+    precio : String,
+    ciudad : String,
     descripcion : String,
-    price : Number,
+    cantCuartos : String,
+    cantBaños : String,
+    superficie : String,
     lat : Number,
     lon : Number,
-    neighborhood: String,
-    city: String,
     gallery: Array,
-    contact: String
+    imagen : Array,
+
+
 
 });
 var home = mongoose.model("home", homeSchema);

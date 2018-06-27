@@ -1,4 +1,5 @@
 var express = require('express');
+
 var multer = require('multer');
 var router = express.Router();
 var fs = require('fs');
@@ -7,6 +8,8 @@ var User = require("../../../database/collections/user");
 var Home = require("../../../database/collections/home");
 var Quarter = require("../../../database/collections/quarter");
 var Img = require("../../../database/collections/img");
+var Mapa = require("../../../database/collections/mapa");
+
 
 var jwt = require("jsonwebtoken");
 
@@ -102,9 +105,9 @@ router.post(/homeimg\/[a-z0-9]{1,}$/, (req, res) => {
           var data = docs.gallery;
           var aux = new  Array();
           if (data.length == 1 && data[0] == "") {
-            home.gallery.push("http://192.168.43.249:7777/api/v1.0/homeimg/" + infoimg._id)
+            home.gallery.push("http://192.168.43.207:7777/api/v1.0/homeimg/" + infoimg._id)
           } else {
-            aux.push("http://192.168.43.249:7777/api/v1.0/homeimg/" + infoimg._id);
+            aux.push("http://192.168.43.207:7777/api/v1.0/homeimg/" + infoimg._id);
             data = data.concat(aux);
             home.gallery = data;
           }
@@ -162,13 +165,15 @@ router.post("/user", (req, res) => {
     return;
   }
   var user = {
-    name : req.body.name,
-    lastname : req.body.lastname,
-    number : req.body.email.number,
+
+    nombre : req.body.nombre,
+    apellido : req.body.apellido,
+    correo : req.body.correo,
+    numTelefono : req.body.numTelefono,
     ciudad : req.body.ciudad,
-    sexo : req.body.sexo,
-    email : req.body.email,
-    password : req.body.password
+    direccion : req.body.direccion,
+    contraseña : req.body.contraseña
+
   };
   var userData = new User(user);
 
@@ -185,7 +190,9 @@ router.get("/user", (req, res, next) => {
     res.status(200).json(docs);
   })
 });
-// Read only one user
+
+
+// mostrando usuarios creados
 router.get(/user\/[a-z0-9]{1,}$/, (req, res) => {
   var url = req.url;
   var id = url.split("/")[2];
@@ -233,7 +240,7 @@ router.put(/user\/[a-z0-9]{1,}$/, (req, res) => {
   var url = req.url;
   var id = url.split("/")[2];
   var keys  = Object.keys(req.body);
-  var oficialkeys = ['name', 'altura', 'peso', 'edad', 'sexo', 'email'];
+  var oficialkeys = ['nombre', 'apellido', 'correo', 'numTelefono', 'ciudad', 'direccion', 'contraseña'];
   var result = _.difference(oficialkeys, keys);
   if (result.length > 0) {
     res.status(400).json({
@@ -243,12 +250,15 @@ router.put(/user\/[a-z0-9]{1,}$/, (req, res) => {
   }
 
   var user = {
-    name : req.body.name,
-    lastname : req.body.lastname,
-    number : req.body.email.number,
-    ciudad : req.body.ciudad,
-    sexo : req.body.sexo,
-    email : req.body.email
+
+        nombre : req.body.nombre,
+        apellido : req.body.apellido,
+        correo : req.body.correo,
+        numTelefono : req.body.numTelefono,
+        ciudad : req.body.ciudad,
+        direccion : req.body.direccion,
+        contraseña : req.body.contraseña
+
   };
   User.findOneAndUpdate({_id: id}, user, (err, params) => {
       if(err) {
@@ -272,15 +282,20 @@ router.post("/home", (req, res) => {
     return;
   }
   var home = {
-    street : req.body.street,
+
+    tipo : req.body.tipo,
+    estado : req.body.estado,
+    precio : req.body.precio,
+    ciudad : req.body.ciudad,
     descripcion : req.body.descripcion,
-    price : req.body.price,
+    cantCuartos : req.body.cantCuartos,
+    cantBaños : req.body.cantBaños,
+    superficie : req.body.superficie,
     lat : req.body.lat,
     lon : req.body.lon,
-    neighborhood : req.body.neighborhood,
-    city : req.body.city,
-    gallery: "",
-    contact: req.body.contact
+    gallery: req.body.gallery,
+    imagen : req.body.image,
+
   };
   var homeData = new Home(home);
 
@@ -293,12 +308,13 @@ router.post("/home", (req, res) => {
   });
 });;
 
+
 router.get("/home", (req, res, next) => {
   Home.find({}).exec( (error, docs) => {
     res.status(200).json(docs);
   })
 });
-// Read only one user
+// listamos las casas
 router.get(/home\/[a-z0-9]{1,}$/, (req, res) => {
   var url = req.url;
   var id = url.split("/")[2];
@@ -321,61 +337,6 @@ router.delete(/home\/[a-z0-9]{1,}$/, (req, res) => {
       res.status(200).json(docs);
     });
 });
-
-router.patch(/home\/[a-z0-9]{1,}$/, (req, res) => {
-  var url = req.url;
-  var id = url.split("/")[2];
-  var keys = Object.keys(req.body);
-  var user = {};
-  for (var i = 0; i < keys.length; i++) {
-    user[keys[i]] = req.body[keys[i]];
-  }
-  console.log(user);
-  User.findOneAndUpdate({_id: id}, user, (err, params) => {
-      if(err) {
-        res.status(500).json({
-          "msn": "Error no se pudo actualizar los datos"
-        });
-        return;
-      }
-      res.status(200).json(params);
-      return;
-  });
-});
-
-router.put(/home\/[a-z0-9]{1,}$/, verifytoken,(req, res) => {
-  var url = req.url;
-  var id = url.split("/")[2];
-  var keys  = Object.keys(req.body);
-  var oficialkeys = ['name', 'altura', 'peso', 'edad', 'sexo', 'email'];
-  var result = _.difference(oficialkeys, keys);
-  if (result.length > 0) {
-    res.status(400).json({
-      "msn" : "Existe un error en el formato de envio puede hacer uso del metodo patch si desea editar solo un fragmentode la informacion"
-    });
-    return;
-  }
-
-  var user = {
-    name : req.body.name,
-    altura : req.body.altura,
-    peso : req.body.peso,
-    edad : req.body.edad,
-    sexo : req.body.sexo,
-    email : req.body.email
-  };
-  Home.findOneAndUpdate({_id: id}, user, (err, params) => {
-      if(err) {
-        res.status(500).json({
-          "msn": "Error no se pudo actualizar los datos"
-        });
-        return;
-      }
-      res.status(200).json(params);
-      return;
-  });
-});
-
 
 
 
@@ -437,10 +398,80 @@ router.delete(/quarter\/[a-z0-9]{1,}$/, (req, res) => {
     });
 });
 
+//mapas
+router.post(/mapa\/[a-z0-9]{1,}$/, (req, res) => {
+  var url= req.url;
+  var id = url.split("/")[2];
+  //Ejemplo de validacion
+  if (req.body.name == "" && req.body.email == "") {
+    res.status(400).json({
+      "msn" : "formato incorrecto"
+    });
+    return;
+  }
+  var mapa = {
+    calle : req.body.street,
+    descripcion : req.body.descripcion,
+    lat : req.body.lat,
+    lon : req.body.lon,
+    vecinos : req.body.neighborhood,
+    ciudad : req.body.city,
+    contact: req.body.contact
+  };
+  var mapaData = new Mapa(mapa);
 
+  mapaData.save().then( (rr) => {
 
+    var mp = {
+      ubicacion: new Array()
+    }
+    Inmuebles.findOne({_id:id}).exec( (error, docs) => {
+      var dt = docs.ubicacion;
+      var aux = new Array();
+      if (dt.length == 1 && dt[0] == ""){
+        mp.ubicacion.push("/api/v1.0/mapa/")
+      }
+      else {
+        aux.push("/api/v1.0/mapa/");
+        dt = dt.concat(aux);
+        mp.ubicacion = dt;
+      }
+      Inmuebles.findOneAndUpdate({_id : id}, mp, (err, params) => {
+          if(err){
+            res.status(500).json({
+              "msn" : "error"
+            });
+            return;
+          }
+          res.status(200).json(req.file);
+          return;
+      });
+    });
+    //content-type
+    res.status(200).json({
+      "id" : rr._id,
+      "msn" : "mapa Registrado con exito "
+    });
+  });
+});
 
-
+//recuperar el array de la mapa
+router.get(/mapa\/[a-z0-9]{1,}$/, (req, res) => {
+  var url = req.url;
+  var id = url.split("/")[2];
+  console.log(id)
+  Mapa.findOne({_id: id}).exec((err, docs) => {
+    if (err) {
+      res.status(500).json({
+        "msn": "Sucedio algun error en el servicio"
+      });
+      return;
+    }
+    else{
+          res.status(200).json({docs});
+    }
+  });
+});
 
 
 module.exports = router;
