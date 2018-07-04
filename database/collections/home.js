@@ -5,7 +5,7 @@ var homeSchema = new Schema ({
 
     tipo : String,
     estado : String,
-    precio : String,
+    precio : Number,
     ciudad : String,
     descripcion : String,
     cantCuartos : String,

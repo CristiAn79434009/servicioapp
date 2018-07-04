@@ -105,9 +105,9 @@ router.post(/homeimg\/[a-z0-9]{1,}$/, (req, res) => {
           var data = docs.gallery;
           var aux = new  Array();
           if (data.length == 1 && data[0] == "") {
-            home.gallery.push("http://192.168.43.207:7777/api/v1.0/homeimg/" + infoimg._id)
+            home.gallery.push("http://192.168.1.106:7777/api/v1.0/homeimg/" + infoimg._id)
           } else {
-            aux.push("http://192.168.43.207:7777/api/v1.0/homeimg/" + infoimg._id);
+            aux.push("http://192.168.1.106:7777/api/v1.0/homeimg/" + infoimg._id);
             data = data.concat(aux);
             home.gallery = data;
           }
