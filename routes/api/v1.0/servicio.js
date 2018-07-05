@@ -99,15 +99,16 @@ router.post(/homeimg\/[a-z0-9]{1,}$/, (req, res) => {
         //Update User IMG
         var home = {
           gallery: new Array()
+          //imagen : new Array()
         }
         Home.findOne({_id:id}).exec( (err, docs) =>{
           //console.log(docs);
           var data = docs.gallery;
           var aux = new  Array();
           if (data.length == 1 && data[0] == "") {
-            home.gallery.push("http://192.168.1.106:7777/api/v1.0/homeimg/" + infoimg._id)
+            home.gallery.push("http://172.17.0.1:7777/api/v1.0/homeimg/" + infoimg._id)
           } else {
-            aux.push("http://192.168.1.106:7777/api/v1.0/homeimg/" + infoimg._id);
+            aux.push("http://172.17.0.1:7777/api/v1.0/homeimg/" + infoimg._id);
             data = data.concat(aux);
             home.gallery = data;
           }
@@ -471,6 +472,110 @@ router.get(/mapa\/[a-z0-9]{1,}$/, (req, res) => {
           res.status(200).json({docs});
     }
   });
+});
+
+//FIltrado
+router.get("/home_f", (req, res, next) => {
+  //query params
+  var params = req.query;
+
+  var precio = params.precio;
+  console.log(precio);
+  var over = params.over;
+  console.log(over);
+
+  if(precio == undefined && over == undefined){
+    Home.find({lat: {$ne: null}, lon: {$ne: null}}).exec( (error, docs) => {
+      res.status(200).json({
+        info: docs
+      });
+    })
+    return;
+  }
+ if(over == "equals"){
+   //min<precio&max<precio
+   console.log("---------->")
+   Home.find({precio : precio, lat: {$ne: null}, lon: {$ne: null}}).exec( (error, docs) => {
+     res.status(200).json({
+      info:  docs
+     });
+   })
+   return;
+ }
+ else if (over == "true"){
+   Home.find({precio: {$gt:precio}, lat: {$ne: null}, lon: {$ne: null}}).exec( (error, docs) => {
+     res.status(200).json({
+       info: docs
+     });
+   })
+ }
+
+});
+
+//filtro simplificado
+router.get('/filtro_precio', (req, res, next) =>{
+  var params = req.query;
+  var max = params.max;
+  var min = params.min ;
+  console.log("msn"+max);
+  console.log("msnmin"+min);
+
+//db.inventario.find( {$and: [  {qty :{  $gt :  25  }} , {qty : { $lt : 85 }} ] } )
+//db.inventario.find( {qty : {$gt: 25, $lt: 85} } )
+  Home.find( {$and: [ {precio : {$lt : max}} , {precio : {$gt : min}} ] }  ).exec((err, docs) => {
+    if(docs){
+          res.status(200).json({
+            info: docs
+          });
+    }
+    else{
+      res.status(201).json({
+        "msn" : "no existe casas con ese precio "
+      })
+    }
+    /*res.status(200).json({
+      info: docs
+    });*/
+  })
+});
+
+router.get('/filtro_tipo', (req ,res,next) =>{
+  var params = req.query;
+  var tipo = params.tipo;
+  var estado = params.estado;
+  console.log("tipo"+tipo);
+
+  Home.find( {$and: [ {tipo : tipo},{estado : estado} ] } ).exec((err, docs) => {
+    if(docs){
+          res.status(200).json({
+            info: docs
+          });
+    }
+    else{
+      res.status(201).json({
+        "msn" : "no existe casas con ese precio "
+      })
+    }
+  })
+});
+
+router.get('/filtro_cant', (req, res, next) => {
+  var params = req.query;
+  var wuc = params.wuc;
+  var cuarto = params.cuarto;
+  console.log("-->"+wuc);
+  Home.find( {$and : [ {cantCuartos: cuarto }, {cantBaños : wuc }] }).exec((err, docs) =>{
+    if(docs){
+          res.status(200).json({
+            info: docs
+          });
+    }
+    else{
+      res.status(201).json({
+        "msn" : "no existe casas con esa cantidad de cuartos y baños "
+      })
+    }
+  })
 });
 
 
