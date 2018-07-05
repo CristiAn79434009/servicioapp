@@ -153,7 +153,7 @@ router.get(/homeimg\/[a-z0-9]{1,}$/, (req, res) => {
 
 
 
-//CRUD Create, Read, Update, Delete
+//CRUD Creacion, Lectura, actual, Delete
 //Creation of users
 
 //creacion de nuevo usuario
