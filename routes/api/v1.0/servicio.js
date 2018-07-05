@@ -3,7 +3,7 @@ var express = require('express');
 var multer = require('multer');
 var router = express.Router();
 var fs = require('fs');
-//var _ = require ("underscore");
+
 var User = require("../../../database/collections/user");
 var Home = require("../../../database/collections/home");
 var Quarter = require("../../../database/collections/quarter");
