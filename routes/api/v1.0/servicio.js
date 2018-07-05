@@ -520,8 +520,6 @@ router.get('/filtro_precio', (req, res, next) =>{
   console.log("msn"+max);
   console.log("msnmin"+min);
 
-//db.inventario.find( {$and: [  {qty :{  $gt :  25  }} , {qty : { $lt : 85 }} ] } )
-//db.inventario.find( {qty : {$gt: 25, $lt: 85} } )
   Home.find( {$and: [ {precio : {$lt : max}} , {precio : {$gt : min}} ] }  ).exec((err, docs) => {
     if(docs){
           res.status(200).json({
@@ -533,9 +531,7 @@ router.get('/filtro_precio', (req, res, next) =>{
         "msn" : "no existe casas con ese precio "
       })
     }
-    /*res.status(200).json({
-      info: docs
-    });*/
+  
   })
 });
 
