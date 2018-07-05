@@ -448,7 +448,7 @@ router.post(/mapa\/[a-z0-9]{1,}$/, (req, res) => {
           return;
       });
     });
-    //content-type
+
     res.status(200).json({
       "id" : rr._id,
       "msn" : "mapa Registrado con exito "
@@ -476,7 +476,7 @@ router.get(/mapa\/[a-z0-9]{1,}$/, (req, res) => {
 
 //FIltrado
 router.get("/home_f", (req, res, next) => {
-  //query params
+
   var params = req.query;
 
   var precio = params.precio;
@@ -531,7 +531,7 @@ router.get('/filtro_precio', (req, res, next) =>{
         "msn" : "no existe casas con ese precio "
       })
     }
-  
+
   })
 });
 
