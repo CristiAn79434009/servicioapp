@@ -426,7 +426,7 @@ router.post(/mapa\/[a-z0-9]{1,}$/, (req, res) => {
     var mp = {
       ubicacion: new Array()
     }
-    Inmuebles.findOne({_id:id}).exec( (error, docs) => {
+    Home.findOne({_id:id}).exec( (error, docs) => {
       var dt = docs.ubicacion;
       var aux = new Array();
       if (dt.length == 1 && dt[0] == ""){
@@ -437,7 +437,7 @@ router.post(/mapa\/[a-z0-9]{1,}$/, (req, res) => {
         dt = dt.concat(aux);
         mp.ubicacion = dt;
       }
-      Inmuebles.findOneAndUpdate({_id : id}, mp, (err, params) => {
+      Home.findOneAndUpdate({_id : id}, mp, (err, params) => {
           if(err){
             res.status(500).json({
               "msn" : "error"
