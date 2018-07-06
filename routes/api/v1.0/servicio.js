@@ -373,7 +373,8 @@ router.patch(/home_patch\/[a-z0-9]{1,}$/, (req, res) => {
 
 //registro de zonas
 router.post("/quarter", (req, res) => {
-  //Ejemplo de validacion
+
+  
   if (req.body.latitud == "" && req.body.longitud == "") {
     res.status(400).json({
       "msn" : "formato incorrecto"
