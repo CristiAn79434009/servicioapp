@@ -95,8 +95,7 @@ router.post(/homeimg\/[a-z0-9]{1,}$/, (req, res) => {
       };
       var imgData = new Img(img);
       imgData.save().then( (infoimg) => {
-        //content-type
-        //Update User IMG
+      
         var home = {
           gallery: new Array()
           //imagen : new Array()
