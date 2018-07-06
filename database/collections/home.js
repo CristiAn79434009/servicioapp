@@ -17,7 +17,6 @@ var homeSchema = new Schema ({
     imagen : Array,
 
 
-
 });
 var home = mongoose.model("home", homeSchema);
 module.exports = home;
