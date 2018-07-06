@@ -95,7 +95,7 @@ router.post(/homeimg\/[a-z0-9]{1,}$/, (req, res) => {
       };
       var imgData = new Img(img);
       imgData.save().then( (infoimg) => {
-      
+
         var home = {
           gallery: new Array()
           //imagen : new Array()
@@ -293,8 +293,8 @@ router.post("/home", (req, res) => {
     superficie : req.body.superficie,
     lat : req.body.lat,
     lon : req.body.lon,
-    gallery: req.body.gallery,
-    imagen : req.body.image,
+    gallery: "",
+    imagen : "",
 
   };
   var homeData = new Home(home);
